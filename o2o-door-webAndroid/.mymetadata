@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="o2o-door-webAndroid Maven Webapp"
+  id="myeclipse.1486444150547"
+  context-root="/o2o-door-webAndroid"
+  j2ee-spec="6.0"
+  archive="o2o-door-webAndroid Maven Webapp.war">
+  <attributes>
+    <attribute name="webrootdir" value="src/main/webapp" />
+  </attributes>
+</project-module>
+

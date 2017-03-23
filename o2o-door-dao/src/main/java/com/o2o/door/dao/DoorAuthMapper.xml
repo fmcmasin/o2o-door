@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.o2o.door.dao.DoorAuthMapper">
+  
+  <!-- 查询 权限申请列表 -->
+ <select id="selectDoorAuthData" parameterType="hashmap" resultType="java.util.Map">
+select da.userid as userid,d.id as doorid,b.name as buid,u.name as unit,h.address as house,smb.tname as username,smb.weixinname as wechatname, smb.phone as tel,
+ifnull(d.`name`,'无') as doorname,case da.status when 'appr' then '已通过' when 'wappr' then '待审批' when 'rappr'  then '已禁止' else null end as status,ifnull(da.remarks,'无') as remarks
+from door_apply da LEFT JOIN door d on da.doorid = d.id  LEFT JOIN sys_member smb on smb.id = da.userid 
+LEFT JOIN  caa_member m on smb.id = m.mid  LEFT JOIN  caa_house h on m.hid = h.id  
+LEFT JOIN caa_unit u on h.unitid = u.id  LEFT JOIN caa_building b on u.bid = b.id where 1=1
+ <if test="vid != null">
+    and smb.vid = #{vid,jdbcType=INTEGER}
+  </if> 
+  <if test="bid != null">
+    and u.bid = #{bid,jdbcType=INTEGER}
+  </if> 
+  <if test="uid != null">
+    and u.id = #{uid,jdbcType=INTEGER}
+  </if>
+  <if test="hid != null">
+    and h.id = #{hid,jdbcType=INTEGER}
+  </if>
+  <if test="username != null and username !='' ">
+    and smb.tname like  "%"#{username,jdbcType=VARCHAR}"%"
+  </if>
+  <if test="tel != null and tel !='' ">
+    and smb.phone =#{tel,jdbcType=VARCHAR}
+  </if>
+  <if test="status != null and status != '' ">
+    and da.status =#{status,jdbcType=VARCHAR}
+  </if>
+  </select>
+  
+  <!-- 更改 人员权限状态 -->
+  <update id="updateDoorAuth">
+  update door_apply set status = #{2},approvetime=#{3}  where userid=#{0} and doorid=#{1}
+  </update>
+  
+  <!-- 权限查询列表 -->
+  <select id="selectDoorAuthQueryData" parameterType="hashmap" resultType="java.util.Map">
+  select DISTINCT smb.tname as username, smb.weixinname as wechatname, case smb.isowner
+	when '0' then '业主' when '1' then '业主家属' when  '2' then '租客' when '3' then '访客'  when '5' then '工作人员' else null end as identity
+	,smb.phone as tel ,ifnull(b.name,"") as buid,ifnull(u.name,"") as unit ,ifnull(h.address,"") as house,group_concat(ifnull(d.`name`,'无')) as doorname  from  door_auth  da 
+	LEFT JOIN door_list dt on da.userid = dt.userid LEFT JOIN door d on dt.doorid = d.id
+	LEFT JOIN sys_member  smb  on dt.userid = smb.id LEFT JOIN  caa_member m on smb.id = m.mid  LEFT JOIN  caa_house h on m.hid = h.id 
+	LEFT JOIN caa_unit u on h.unitid = u.id  LEFT JOIN caa_building b on u.bid = b.id   where 1=1
+  <if test="vid != null">
+    and smb.vid = #{vid,jdbcType=INTEGER}
+  </if> 
+  <if test="bid != null">
+    and u.bid = #{bid,jdbcType=INTEGER}
+  </if> 
+  <if test="uid != null">
+    and u.id = #{uid,jdbcType=INTEGER}
+  </if>
+  <if test="hid != null">
+    and h.id = #{hid,jdbcType=INTEGER}
+  </if>
+  <if test="username != null and username !='' ">
+    and smb.tname like  "%"#{username,jdbcType=VARCHAR}"%"
+  </if>
+  <if test="tel != null and tel !='' ">
+    and smb.phone = #{tel,jdbcType=VARCHAR}
+  </if>
+  <if test="doortype != null and doortype !='' ">
+    and d.doortype =#{doortype,jdbcType=VARCHAR}
+  </if>
+   <if test="isowner != null">
+    and smb.isowner =#{isowner,jdbcType=INTEGER}
+  </if>
+   group by smb.tname,b.name,u.name,h.address
+  </select>
+  
+  <!--通过 userid 和 doorid 来查找 记录条数，用于判断人员是否有权限列表，有就不再增 -->
+  <select id="selectDoorListByUseridAndDoorid"  resultType="java.lang.Integer">
+  	select count(*) from door_list  where userid =#{0} and doorid =#{1}
+  </select>
+  
+  <!-- 插入权限门列表 -->
+  <insert id="insertDoorListByUseridAndDoorid">
+    insert into door_list(userid,doorid) values(#{0},#{1})
+  </insert>
+  
+  <!-- 依据用户id 来查找 是否有权限记录，此表记录的是人和二维码数据，不记录门id 通过 用户id关联 -->
+  <select id="selectDoorAuthByUserid"  resultType="java.lang.Integer">
+  	select count(*) from door_auth  where userid =#{0} 
+  </select>
+  
+  <!-- 查询权限表 用户id 和 二维码 -->
+  <insert id="insertDoorAuthByUserid">
+    insert into door_auth(userid,qrcode) values(#{0},#{1})
+  </insert>
+  
+  <!-- 更该二维码数据 -->
+  <update id="updatUserQrcode">
+   update door_auth set qrcode=#{1} where userid=#{0}
+  </update>
+</mapper>

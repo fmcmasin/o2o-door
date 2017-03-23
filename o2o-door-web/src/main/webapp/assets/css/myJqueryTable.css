@@ -1,0 +1,134 @@
+/* 可以修改 */
+.myJs_Table *,.myJs_Table{
+	padding: 0px;
+   	margin: 0px;
+	box-sizing: border-box;
+}
+.myJs_Table{
+	border-spacing: 0;
+	border-collapse: collapse;
+	max-width: 100%;
+	background-color: transparent;
+	font-family: "Open Sans", Arial, sans-serif;
+	font-size: 13px;
+	font-family: '黑体';
+	color: #9ea7b3;
+	line-height: 1.428571429;
+}
+/* 可以修改 */
+
+
+.myJs_Table>tfoot>tr>td {
+	height:50px;
+	line-height:50px;
+	padding-left: 10px;
+}
+.myJs_Table>tfoot>tr>td>ul {
+	border: 1px solid #cccccc;
+	list-style-type: none;
+	width: 156px;
+	height: 30px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	float: left;
+}
+.myJs_Table>tfoot>tr>td>ul >li{
+	float:left;
+	width: 30px;
+	height: 29px;
+	border-left: 1px solid #cccccc;
+	color: #ccccd4;
+	line-height: 25px;
+	text-align: center;
+	cursor: pointer;
+}
+.myJs_Table>tfoot>tr>td>ul >li>input{
+	float: 0px;
+	width: 29px;
+	height: 28px;
+	border: 0px;
+	color: #444482;
+	text-align: center;
+	background-color: #EEEEEE;
+}
+.myJs_Table>tfoot>tr>td>ul > li:first-child{
+	border-left: 0px;
+	width: 32px;
+}
+.myJs_Table>tfoot>tr>td>ul > li:last-child{
+	width: 32px;
+}
+.myJs_Table>tfoot>tr>td>div{
+	color:#9EA7B3;
+	float: left;
+	margin-left: 20px;
+	height: 30px;
+	line-height: 30px;
+	font-size: 14px;
+	font-family: '黑体';
+}
+
+
+/* 可以修改 */
+.myJs_Table {
+	width: 100%;
+	border: 1px solid #CCCCCC;
+}
+.myJs_Table>tbody>tr>td{
+	height:30px;
+	line-height:30px;
+	border-bottom: 1px solid #DDDDDD;
+	border-right: 1px solid #DDDDDD;
+	padding-left: 10px;
+}
+.myJs_Table>tbody>tr>td:last-child{
+	border-right: 0px;
+}
+.myJs_Table>thead>tr>th{
+	height:40px;
+	line-height:40px;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #DDDDDD;
+	font-weight: normal;
+	padding-left: 10px;
+	cursor: pointer;
+	webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: -moz-none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.myJs_Table>thead>tr>th:last-child{
+	border-right: 0px;
+}
+/* 可以修改 */
+
+
+
+.member_table_dv{
+	display:inline-block;
+	width: 8px;
+	height: 10px;
+}
+.member_table_dv span:first-child{
+	float: left;
+	width: 8px;
+	height: 5px;
+	background-image: url("myTableImgs/upSort.png");
+}
+.member_table_dv span:last-child{
+	float: left;
+	width: 8px;
+	height: 5px;
+	margin-top:1px;
+	background-image: url("myTableImgs/downSort.png");
+}
+.member_table_tr_bg{
+	background-color: #E1F8FA;
+}
+

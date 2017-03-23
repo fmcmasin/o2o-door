@@ -1,0 +1,15 @@
+.___upload___images{
+    	position: relative;
+    	float: left;
+    	margin-left: 5px;
+    	margin-top: 5px;
+}
+.___upload___images___del{
+	position: absolute;
+	top: 0px;
+	display: none;
+	cursor: pointer;
+	background-image: url("uploadImgs/close.png");
+	width: 16px;
+	height: 16px;
+}

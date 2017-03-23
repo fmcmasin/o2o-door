@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.o2o.door.dao.DoorAuthSettingMapper">
+
+<!-- 获取业主权限设定列表 -->
+ <select id="getOwnerIndex" parameterType="com.o2o.door.model.Door_Auth_Owner" resultType="java.util.Map">
+select distinct smb.id as userid,smb.tname as username,smb.weixinname as  wechatname,smb.iphone as tel,b.`name` as buid,
+u.`name` as unit,h.address as house, group_concat(ifnull(d.`name`,'无')) as doorname 
+from  caa_member m  LEFT JOIN sys_member smb  on smb.id = m.mid  LEFT JOIN  caa_house h on m.hid = h.id 
+LEFT JOIN caa_unit u on h.unitid = u.id  LEFT JOIN caa_building b on u.bid = b.id  LEFT JOIN door_list dt
+on smb.id = dt.userid  LEFT JOIN door d on dt.doorid = d.id where isowner = 0
+<if test="vid != null">
+  and smb.vid = #{vid,jdbcType=INTEGER}
+</if> 
+<if test="bid != null">
+  and u.bid = #{bid,jdbcType=INTEGER}
+</if> 
+<if test="uid != null">
+  and u.id = #{uid,jdbcType=INTEGER}
+</if>
+<if test="hid != null and hid !='' ">
+  and h.id = #{hid,jdbcType=VARCHAR}
+</if>
+<if test="username != null and username !='' ">
+  and smb.tname like "%"#{username,jdbcType=VARCHAR}"%"
+</if>
+<if test="tel != null and tel !='' ">
+  and smb.phone = #{tel,jdbcType=VARCHAR}
+</if>
+ group by smb.tname,b.name,u.name,h.address
+</select>
+
+<!-- 获取工作人员权限设定列表 -->
+<select id="getStaffIndex" parameterType="com.o2o.door.model.Door_Auth_Staff" resultType="java.util.Map">
+select distinct smb.id as userid,smb.tname as username,smb.weixinname as  wechatname,smb.phone as tel,group_concat(ifnull(d.`name`,'无')) as doorname
+from sys_member smb LEFT JOIN door_list dt on smb.id = dt.userid  LEFT JOIN door d on dt.doorid = d.id where smb.isowner = 5 
+<if test="username != null and username !='' ">
+  and smb.tname like  "%"#{username,jdbcType=VARCHAR}"%"
+</if>
+<if test="tel != null and tel !='' ">
+  and smb.phone = #{tel,jdbcType=VARCHAR}
+</if>
+<if test="vid != null and vid !='' ">
+  and smb.vid = #{vid,jdbcType=VARCHAR}
+</if>
+ group by smb.tname
+</select>
+
+<!-- 获取业主信息 sys_member -->
+<select id="getUseridMap"  resultType="java.util.Map">
+select id,idnumber,vid from  sys_member where 1=1  
+<if test="list.size()>0">
+and idnumber in
+<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+         #{item}       
+</foreach> 
+</if> 
+</select>
+
+<!-- 获取工作人员信息  sys_user -->
+<select id="getSysUserByVid" parameterType="java.lang.Integer" resultType="java.util.Map">
+SELECT idnumber,phone,address,tname,wxname,wxid from  sys_user su LEFT JOIN user_village uv on su.id = uv.uid where uv.vid = #{0}
+
+</select>
+
+<!-- 查询记录 看工作人员记录是否添加到 业主表里面了 -->
+<select id="selectSysuserInSysmember"  resultType="java.lang.Integer">
+select count(*) from  sys_member sm where EXISTS(select * from sys_user su LEFT JOIN user_village uv on su.id = uv.uid where uv.vid = #{0} and su.wxid = sm.weixin) and isowner =5 and sm.weixin =#{1}
+</select>
+
+<!-- 将工作人员记录插入 业主表中 -->
+<insert id="insertSysUserToSysMember" parameterType="hashmap">
+    insert into sys_member
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !='' ">
+        id,
+      </if>
+      <if test="tname != null and tname !='' ">
+        tname,
+      </if>
+      <if test="wxid != null and wxid !='' ">
+        weixin,
+      </if>
+      <if test="wxname != null and wxname !='' ">
+        weixinname,
+      </if>
+      <if test="isowner != null and isowner !='' ">
+        isowner,
+      </if>
+      <if test="vid != null and vid !='' ">
+        vid,
+      </if>
+      <if test="address != null and address !='' ">
+        address,
+      </if>
+      <if test="idnumber != null and idnumber !='' ">
+        idnumber,
+      </if>
+      <if test="phone != null and phone !=''">
+        phone,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tname != null and tname !='' ">
+        #{tname,jdbcType=VARCHAR},
+      </if>
+      <if test="wxid != null and wxid !='' ">
+        #{wxid,jdbcType=VARCHAR},
+      </if>
+      <if test="wxname != null and wxname !='' ">
+        #{wxname,jdbcType=VARCHAR},
+      </if>
+      <if test="isowner != null">
+        #{isowner,jdbcType=INTEGER},
+      </if>
+      <if test="vid != null">
+        #{vid,jdbcType=INTEGER},
+      </if>
+      <if test="address != null and address !='' ">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="idnumber != null and idnumber !='' ">
+        #{idnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null and phone !=''">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

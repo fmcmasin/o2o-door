@@ -1,0 +1,16 @@
+.checkboxselect-container{
+    border:1px solid #33CCFF;
+    visibility:hidden;
+    background:white;
+}
+.checkboxselect-hidden{
+    margin-top:5px;
+}
+.checkboxselect-item{
+    padding:3px 2px;
+}
+.checkboxselect-active{
+    background:#33CCFF;
+    color:white;
+    padding:3px 2px;
+}

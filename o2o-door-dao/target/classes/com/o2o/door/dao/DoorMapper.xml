@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.o2o.door.dao.DoorMapper">
+  <resultMap id="BaseResultMap" type="com.o2o.door.model.Door">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="doortype" jdbcType="VARCHAR" property="doortype" />
+    <result column="vid" jdbcType="INTEGER" property="vid" />
+    <result column="bid" jdbcType="INTEGER" property="bid" />
+    <result column="uid" jdbcType="INTEGER" property="uid" />
+    <result column="rketype" jdbcType="VARCHAR" property="rketype" />
+    <result column="devicecode" jdbcType="VARCHAR" property="devicecode" />
+    <result column="deviceid" jdbcType="VARCHAR" property="deviceid" />
+    <result column="linglingid" jdbcType="VARCHAR" property="linglingid" />
+    <result column="sdkey" jdbcType="VARCHAR" property="sdkey" />
+    <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, doortype, vid, rketype,
+    devicecode, deviceid, linglingid, sdkey ,remarks
+  </sql>
+  
+  <!-- 依据 门 id 来查找 门详细信息 -->
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from door
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 依据设备 序列号来查询 设备 id 和 linglingid -->
+   <select id="selectDeviceid" parameterType="java.lang.String" resultMap="BaseResultMap">
+   select distinct deviceid,linglingid,sdkey  from door where devicecode = #{0}
+  </select>
+  
+  <!-- 查询门列表 -->
+  <select id="selectByParams"  parameterType="hashmap" resultMap="BaseResultMap">
+    select id,name,devicecode,case doortype when 'cmdoor' then '小区公共门' when 'custdoor' then '楼栋单元门' else null end as doortype,
+    case rketype when 'smrdoor' then '智能门禁' when 'macdoor' then '机械门禁' when 'other' then '其它' else null end as rketype, ifnull(remarks,"") as remarks
+    from door
+   where 1=1
+   <if test="vid != null">
+    and vid = #{vid,jdbcType=INTEGER}
+  </if> 
+  <if test="name != null and name !='' ">
+    and name like "%"#{name,jdbcType=VARCHAR}"%"
+  </if> 
+  <if test="doortype != null and doortype !='' ">
+    and doortype = #{doortype,jdbcType=VARCHAR}
+  </if>
+  <if test="rketype != null and rketype !='' ">
+    and rketype = #{rketype,jdbcType=VARCHAR}
+  </if>
+  </select>
+  
+  <!-- 删除门 -->
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from door
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  
+  <!-- 删除权限  暂时没调用 -->
+  <delete id="deleteDoorAuthByDoorid" parameterType="java.lang.Integer">
+   delete from door_auth where  EXISTS(select * from  door_list  where doorid = #{id,jdbcType=INTEGER})
+  </delete>
+  
+  <!-- 删除了门之后，将有这个门从门列表里删除 -->
+  <delete id="deleteDoorListByDoorid" parameterType="java.lang.Integer">
+    delete from door_list  where doorid = #{id,jdbcType=INTEGER}
+  </delete>
+  <!-- 插入门信息 -->
+  <insert id="insertSelective" parameterType="com.o2o.door.model.Door">
+    insert into door
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null and id !='' ">
+        id,
+      </if>
+      <if test="name != null and name !='' ">
+        name,
+      </if>
+      <if test="doortype != null and doortype !='' ">
+        doortype,
+      </if>
+      <if test="vid != null and vid !='' ">
+        vid,
+      </if>
+      <if test="bid != null and bid !='' ">
+        bid,
+      </if>
+      <if test="uid != null and uid !='' ">
+        uid,
+      </if>
+      <if test="rketype != null and rketype !='' ">
+        rketype,
+      </if>
+      <if test="devicecode != null and devicecode !='' ">
+        devicecode,
+      </if>
+      <if test="deviceid != null and deviceid !=''">
+        deviceid,
+      </if>
+      <if test="linglingid != null and linglingid !='' ">
+        linglingid,
+      </if>
+      <if test="sdkey != null and sdkey !='' ">
+        sdkey,
+      </if>
+       <if test="remarks != null and remarks !='' ">
+        remarks,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null and name !='' ">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="doortype != null and doortype !='' ">
+        #{doortype,jdbcType=VARCHAR},
+      </if>
+      <if test="vid != null">
+        #{vid,jdbcType=INTEGER},
+      </if>
+      <if test="bid != null">
+        #{bid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=INTEGER},
+      </if>
+      <if test="rketype != null and rketype !='' ">
+        #{rketype,jdbcType=VARCHAR},
+      </if>
+      <if test="devicecode != null and devicecode !=''">
+        #{devicecode,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceid != null and deviceid !=''">
+        #{deviceid,jdbcType=VARCHAR},
+      </if>
+      <if test="linglingid != null and linglingid !='' ">
+        #{linglingid,jdbcType=VARCHAR},
+      </if>
+      <if test="sdkey != null and sdkey !='' ">
+        #{sdkey,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null and remarks !='' ">
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+ <!-- 修改门信息 -->
+<update id="updateByPrimaryKeySelective" parameterType="com.o2o.door.model.Door">
+  update door
+  <set>
+    <if test="name != null and name !='' ">
+      name = #{name,jdbcType=VARCHAR},
+    </if>
+    <if test="doortype != null and doortype !='' ">
+      doortype = #{doortype,jdbcType=VARCHAR},
+    </if>
+    <if test="vid != null">
+       vid = #{vid,jdbcType=INTEGER},
+    </if>
+    <if test="bid != null">
+       bid = #{bid,jdbcType=INTEGER},
+    </if>
+    <if test="uid != null">
+       uid = #{uid,jdbcType=INTEGER},
+    </if>
+    <if test="rketype != null and rketype !='' ">
+       rketype =  #{rketype,jdbcType=VARCHAR},
+    </if>
+    <if test="devicecode != null and devicecode !='' ">
+       devicecode = #{devicecode,jdbcType=VARCHAR},
+    </if>
+    <if test="deviceid != null and deviceid !=''">
+       deviceid = #{deviceid,jdbcType=VARCHAR},
+    </if>
+    <if test="linglingid != null and linglingid !='' ">
+      linglingid =  #{linglingid,jdbcType=VARCHAR},
+    </if>
+    <if test="sdkey != null and sdkey !='' ">
+      sdkey = #{sdkey,jdbcType=VARCHAR},
+    </if>
+      remarks = #{remarks,jdbcType=VARCHAR},
+  </set>
+  where id = #{id,jdbcType=INTEGER}
+</update>
+
+<!-- 更改 用户的 二维码  -->
+<update id="updateUserQrcode">
+  update door_auth set  qrcode = #{1} where EXISTS(select userid from door_list where userid = door_auth.userid and doorid= #{0})
+</update>
+
+<!-- 查询 该人员有哪些门列表 -->
+<select id="selectDoorListByParams"  parameterType="hashmap" resultMap="BaseResultMap">
+  select  distinct d.id,d.name,d.remarks from door d LEFT JOIN door_list dt on d.id = dt.doorid  where 1=1
+<if test="userid != null">
+  and  dt.userid =  #{userid,jdbcType=INTEGER}
+</if> 
+<if test="doortype != null and doortype !='' ">
+  and d.doortype = #{doortype,jdbcType=VARCHAR}
+</if>
+<if test="bid != null">
+  and d.bid = #{bid,jdbcType=INTEGER}
+</if>
+ <if test="vid != null">
+  and d.vid = #{vid,jdbcType=INTEGER}
+ </if>
+</select>
+
+<!-- 通过 userid  来查询 关联的门 linglingid sdkey  用于生成有这些权限门的 二维码 -->
+ <select id="getSdkByUserid" parameterType="java.lang.Integer" resultType="java.util.Map">
+ select DISTINCT linglingid,sdkey from  door d LEFT JOIN door_list dt on d.id = dt.doorid where rketype='smrdoor' and dt.userid = #{0}
+ </select>
+ 
+ <!-- 查询 智能门禁的设备 id -->
+ <select id="getSmrDoorList" resultMap="BaseResultMap">
+ select DISTINCT deviceid from door where rketype='smrdoor' 
+
+ </select>
+ 
+ <!-- 更新设备的sdk  用于定时任务更新 -->
+ <update id="updateSdkey">
+ update door set sdkey= #{1} where deviceid= #{0}
+ </update>
+ 
+ 
+ <!-- 调用存储过程进行每天创建表结构 -->
+ <select id="callCreate_door_open_list"  statementType="CALLABLE"  resultType="java.lang.Integer">  
+  {call door_open_list()}  
+</select>
+
+<!-- 调用存储过程进行插入开门日志信息 -->
+ <update id="callInsert_door_open_insert" statementType="CALLABLE">
+  {call door_open_insert(#{0,jdbcType=INTEGER,mode=IN},#{1,jdbcType=TIMESTAMP,mode=IN})}  
+</update>
+
+<!-- 通过门名称查询 门 id -->
+<select id="getDoorid"  resultType="java.util.Map">
+select id  from  door where 1=1
+<if test="vid != null and vid !='' ">
+    and vid = #{vid,jdbcType=VARCHAR}
+</if> 
+<if test="list.size()>0">
+and name in
+<foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+         #{item}       
+</foreach> 
+</if>
+</select>
+
+<!-- 查询业主信息 -->
+<select id="getSysmemberData" resultType="java.util.Map">
+select id as userid from sys_member where isowner = 0
+</select>
+
+<!-- 查询开门日志列表 -->
+<select id="selectDoorOpenList"  parameterType="com.o2o.door.model.DoorOpenListCondition" resultType="java.util.Map">
+ select smb.tname as username,cb.name as buid, ch.address as house, cu.`name` as unit,group_concat(ifnull(d.`name`,'无')) as doorname,smb.phone as tel,case smb.isowner
+ when '0' then '业主' when '1' then '业主家属' when  '2' then '租客' when '3' then '访客'  when '5' then '工作人员' else null end as isowner  
+ from ${tableName}  t  LEFT JOIN   sys_member smb on t.userid = smb.id LEFT JOIN caa_member cm on smb.id = cm.mid LEFT JOIN
+ caa_house ch on cm.hid = ch.id LEFT JOIN caa_unit cu on ch.unitid = cu.id LEFT JOIN caa_building cb on cu.bid = cb.id LEFT JOIN door_list dt 
+ on smb.id = dt.userid  LEFT JOIN door d on dt.doorid = d.id where 1=1
+ <if test="vid != null">
+  and smb.vid = #{vid,jdbcType=INTEGER}
+</if> 
+<if test="username != null and username !='' ">
+  and smb.tname like "%"#{username,jdbcType=VARCHAR}"%"
+</if> 
+<if test="bid != null">
+  and cb.id = #{bid,jdbcType=INTEGER}
+</if>
+<if test="uid != null">
+  and cu.id = #{uid,jdbcType=INTEGER}
+</if>
+<if test="hid != null">
+  and ch.id = #{id,jdbcType=INTEGER}
+</if>
+<if test="isowner != null">
+  and smb.isowner = #{isowner,jdbcType=INTEGER}
+</if>
+ group by smb.tname,cb.name,cu.name,ch.address
+</select>
+
+<!-- 获取用户id -->
+<select id="getSysMemberId"  parameterType="java.lang.String" resultType="java.util.Map">
+select id from sys_member where linglingid= #{lingLingid,jdbcType = VARCHAR}
+</select>
+</mapper>
